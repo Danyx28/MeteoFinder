@@ -8,34 +8,38 @@
 </head>
 <body>
   <div class="container">
-    <h1>Previsioni prossimi 3 giorni</h1>
-    <div id="forecast-days"></div>
+    <h1>Previsioni prossimi 2 giorni</h1>
+    <div id="forecast-days" class="flex-row"></div>
     <button onclick="goBack()">🔙 Torna alla home</button>
   </div>
 
   <script>
     function goBack() {
+      const lastSearched = localStorage.getItem('lastSearchedLocation');
+      if (lastSearched) {
+        localStorage.setItem('restoreSearch', lastSearched);
+      }
       window.location.href = 'index.html';
     }
 
     const forecast = JSON.parse(localStorage.getItem('forecast3days')) || [];
     const container = document.getElementById('forecast-days');
 
-    if (forecast.length === 0) {
+    if (forecast.length <= 1) {
       container.innerHTML = '<p>Nessuna previsione disponibile. Torna alla home e cerca una località.</p>';
     } else {
-      forecast.forEach((day, i) => {
-        if (i > 0) {
-          container.innerHTML += `
-            <div class="day-box fade-in">
-              <h3>${day.date}</h3>
-              <img src="https:${day.day.condition.icon}" alt="Icona meteo">
-              <p><strong>Condizioni:</strong> ${day.day.condition.text}</p>
-              <p><strong>🌡 Max:</strong> ${day.day.maxtemp_c}°C</p>
-              <p><strong>❄ Min:</strong> ${day.day.mintemp_c}°C</p>
-            </div>
-          `;
-        }
+      const nextDays = forecast.slice(1); // giorni 2 e 3
+      nextDays.forEach(day => {
+        const box = document.createElement('div');
+        box.className = 'day-box fade-in';
+        box.innerHTML = `
+          <h3>${day.date}</h3>
+          <img src="https:${day.day.condition.icon}" alt="Icona meteo">
+          <p><strong>Condizioni:</strong> ${day.day.condition.text}</p>
+          <p><strong>🌡 Max:</strong> ${day.day.maxtemp_c}°C</p>
+          <p><strong>❄ Min:</strong> ${day.day.mintemp_c}°C</p>
+        `;
+        container.appendChild(box);
       });
     }
   </script>
